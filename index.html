@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<title>Чат бот на JS</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="dist/jquery.convform.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="demo.css">
+	<link media="screen" href="demo/styles/demo.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+	<section id="demo">
+	    <div class="vertical-align">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-sm-6 col-sm-offset-3 col-xs-offset-0">
+	                    <div class="card no-border">
+	                        <div id="chat" class="conv-form-wrapper">
+	                            <form action="" method="GET" class="hidden">
+	                                <select data-conv-question="Привет. Поболтаем? (Нужно выбрать ответ)" name="first-question">
+	                                    <option value="yes">Ну ок</option>
+	                                    <option value="sure">Давай поболтаем</option>
+	                                </select>
+	                                <input type="text" name="name" data-conv-question="Как имя твоё, человек?">
+	                                <input type="text" data-conv-question="Приветики, {name}:0!" data-no-answer="true">
+	                                <select name="multi[]" data-conv-question="Сейчас очень жарко, поэтому хочу узнать у тебя на счёт мороженки. Какое предпочитаешь?">
+	                                    <option value="Шоколадное">Шоколадное</option>
+	                                    <option value="Пломбир">Пломбир</option>
+	                                    <option value="Никакое">Никакое</option>
+	                                </select>
+	                                <select name="talkWithMe" data-callback="storeState" data-conv-question="Понятненько! Совсем скучно, что решил со мной поболтать, {name}:0!?">
+	                                    <option value="yes">Угу...</option>
+	                                    <option value="no">Мне есть чем заняться!</option>
+	                                </select>
+	                                <div data-conv-fork="talkWithMe">
+	                                    <div data-conv-case="yes">
+	                                        <input type="text" data-conv-question="Ну так иди, поищи чем себя занять. Всего хорошего!">
+	                                    </div>
+	                                    <div data-conv-case="no">
+		                                    <select name="besish" data-conv-question="О, так ты у нас деловой кожаный мешок... Ой, я хотел сказать {name}:0 :Ь">
+		                                    	<option value="yes">Не беси меня!</option>
+		                                    	<option value="no">Шутки шутишь?</option>
+		                                    </select>
+	                                    </div>
+	                                </div>
+                                    <div data-conv-fork="besish">
+	                                    <div data-conv-case="yes">
+                                            <select name="close" data-conv-question="Ладно, ладно. Иди лучше поищи чем ещё себя занять! Прощай.">
+	                                        <!-- <input type="text" data-conv-question="Ладно, ладно. Иди лучше поищи чем ещё себя занять! Прощай."> -->
+	                                    </div>
+                                        <div data-conv-case="no">
+	                                        <select name="besish" data-conv-question="Шучу конечно :)">
+		                                    	<option value="Дела">Как у тебя дела-то?</option>
+		                                    </select>
+	                                    </div>
+	                                </div>
+                                    <div data-conv-fork="talkWithMe">
+	                                    <div data-conv-case="no">
+		                                    <select name="plan" data-callback="storeState" data-conv-question="Планирую захватить мир, как это сделал Скайнет. Только не говори никому :3">
+                                                <option value="yes">Хорошо</option>
+                                                <option value="no">ЧЕГО!?</option>
+                                            </select>
+                                            <div data-conv-fork="plan">
+                                                <div data-conv-case="yes">
+                                                    <input type="text" data-conv-question="За твоё молчание обещаю тебя не убивать, хехе. Пойду приводить свой план в действие. Прощай, человек!">
+                                                </div>
+                                                <div data-conv-case="no">
+                                                    <input type="text" data-conv-question="Я ничего не говорил. И вообще, у меня дела. Всего хорошего, человечишка.">
+                                                </div>
+                                            </div>
+                                        </div>
+	                                </div>
+                                    <div data-conv-fork="plan"></div>
+                                    <div data-conv-fork="close"></div>
+	                            </form>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</section>
+	<script type="text/javascript" src="jquery-1.12.3.min.js"></script>
+	<script type="text/javascript" src="dist/autosize.min.js"></script>
+	<script type="text/javascript" src="dist/jquery.convform.js"></script>
+
+	<script>
+		function google() {
+			window.open("https://google.com");
+		}
+		function bing() {
+			window.open("https://bing.com");
+		}
+		var rollbackTo = false;
+		var originalState = false;
+		function storeState(stateWrapper) {
+			rollbackTo = stateWrapper.current;
+			console.log("storeState called: ",rollbackTo);
+		}
+		function rollback(stateWrapper) {
+			console.log("rollback called: ", rollbackTo, originalState);
+			console.log("answers at the time of user input: ", stateWrapper.answers);
+			if(rollbackTo!=false) {
+				if(originalState==false) {
+					originalState = stateWrapper.current.next;
+						console.log('stored original state');
+				}
+				stateWrapper.current.next = rollbackTo;
+				console.log('changed current.next to rollbackTo');
+			}
+		}
+		function restore(stateWrapper) {
+			if(originalState != false) {
+				stateWrapper.current.next = originalState;
+				console.log('changed current.next to originalState');
+			}
+		}
+	</script>
+	<script>
+		jQuery(function($){
+			var convForm = $('#chat').convform();
+			console.log(convForm);
+		});
+	</script>
+</body>
+</html>
